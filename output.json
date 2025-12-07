@@ -1,0 +1,202 @@
+{
+  "groups": [
+    {
+      "groupId": 1,
+      "reference": "pain in right leg, left leg",
+      "entities": [
+        {
+          "tag": "condition",
+          "text": "pain",
+          "start": 0,
+          "end": 4
+        },
+        {
+          "tag": "bodypart",
+          "text": "right leg",
+          "start": 8,
+          "end": 17
+        },
+        {
+          "tag": "bodypart",
+          "text": "left leg",
+          "start": 19,
+          "end": 27
+        }
+      ],
+      "suggestedRelation": {
+        "type": "located_in",
+        "source": "pain",
+        "targets": [
+          "right leg",
+          "left leg"
+        ]
+      }
+    },
+    {
+      "groupId": 2,
+      "reference": "ulcer in foot",
+      "entities": [
+        {
+          "tag": "condition",
+          "text": "ulcer",
+          "start": 32,
+          "end": 37
+        },
+        {
+          "tag": "bodypart",
+          "text": "foot",
+          "start": 41,
+          "end": 45
+        }
+      ],
+      "suggestedRelation": {
+        "type": "located_in",
+        "source": "ulcer",
+        "targets": [
+          "foot"
+        ]
+      }
+    },
+    {
+      "groupId": 3,
+      "reference": "severe headache after taking Ibuprofen 400 mg via oral route for 3 days, which also caused nausea and dizziness during morning activity",
+      "entities": [
+        {
+          "tag": "condition",
+          "text": "severe headache",
+          "start": 68,
+          "end": 83
+        },
+        {
+          "tag": "drug",
+          "text": "Ibuprofen",
+          "start": 97,
+          "end": 106
+        },
+        {
+          "tag": "dosage",
+          "text": "400 mg",
+          "start": 107,
+          "end": 113
+        },
+        {
+          "tag": "route",
+          "text": "oral",
+          "start": 118,
+          "end": 122
+        },
+        {
+          "tag": "duration",
+          "text": "3 days",
+          "start": 133,
+          "end": 139
+        },
+        {
+          "tag": "symptom",
+          "text": "nausea",
+          "start": 159,
+          "end": 165
+        },
+        {
+          "tag": "symptom",
+          "text": "dizziness",
+          "start": 170,
+          "end": 179
+        },
+        {
+          "tag": "event",
+          "text": "morning activity",
+          "start": 187,
+          "end": 203
+        }
+      ],
+      "suggestedRelation": {
+        "type": "treats",
+        "source": "Ibuprofen",
+        "targets": [
+          "severe headache"
+        ]
+      }
+    },
+    {
+      "groupId": 4,
+      "reference": "vomiting after taking Paracetamol 650 mg via oral route for 2 days",
+      "entities": [
+        {
+          "tag": "condition",
+          "text": "vomiting",
+          "start": 234,
+          "end": 242
+        },
+        {
+          "tag": "drug",
+          "text": "Paracetamol",
+          "start": 256,
+          "end": 267
+        },
+        {
+          "tag": "dosage",
+          "text": "650 mg",
+          "start": 268,
+          "end": 274
+        },
+        {
+          "tag": "route",
+          "text": "oral",
+          "start": 279,
+          "end": 283
+        },
+        {
+          "tag": "duration",
+          "text": "2 days",
+          "start": 294,
+          "end": 300
+        }
+      ],
+      "suggestedRelation": {
+        "type": "treats",
+        "source": "Paracetamol",
+        "targets": [
+          "vomiting"
+        ]
+      }
+    },
+    {
+      "groupId": 5,
+      "reference": "blurred vision was reported during evening walking after the use of Metformin 500 mg",
+      "entities": [
+        {
+          "tag": "symptom",
+          "text": "blurred vision",
+          "start": 309,
+          "end": 323
+        },
+        {
+          "tag": "event",
+          "text": "evening walking",
+          "start": 344,
+          "end": 359
+        },
+        {
+          "tag": "drug",
+          "text": "Metformin",
+          "start": 377,
+          "end": 386
+        },
+        {
+          "tag": "dosage",
+          "text": "500 mg",
+          "start": 387,
+          "end": 393
+        }
+      ],
+      "suggestedRelation": {
+        "type": "causes",
+        "source": "Metformin",
+        "targets": [
+          "blurred vision"
+        ]
+      }
+    }
+  ]
+}
