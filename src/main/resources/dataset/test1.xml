@@ -1,0 +1,5 @@
+<root>
+  <condition>rash</condition> on <bodypart>left arm</bodypart> and <bodypart>neck</bodypart>.
+  Prescribed <drug>Amoxicillin</drug> <dosage>250 mg</dosage> via <route>oral</route> for <duration>5 days</duration>.
+  Later reported <symptom>itching</symptom> during <event>night sleep</event>.
+</root>

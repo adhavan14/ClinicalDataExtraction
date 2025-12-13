@@ -19,7 +19,7 @@ public class Patterns {
         Map<String, PatternRule> ruleMap = new HashMap<>();
 
         ruleMap.put("located_in", PatternRule.builder()
-                .triggerPattern(Pattern.compile("\\b(in|on|at|over)\\b"))
+                .triggerPattern(Pattern.compile("\\b(in|on|at|over|localized)\\b"))
                 .relationType("located_in")
                 .sourceTag("condition")
                 .targetTag("bodypart")
@@ -32,11 +32,25 @@ public class Patterns {
                 .targetTag("symptom")
                 .build());
 
-        ruleMap.put("treats", PatternRule.builder()
-                .triggerPattern(Pattern.compile("\\b(treated|for|relief of)\\b"))
+        ruleMap.put("triggered_by", PatternRule.builder()
+                .triggerPattern(Pattern.compile("\\b(after|during)\\b", Pattern.CASE_INSENSITIVE))
+                .relationType("triggered_by")
+                .sourceTag("symptom")
+                .targetTag("event")
+                .build());
+
+        ruleMap.put("treats_condition", PatternRule.builder()
+                .triggerPattern(Pattern.compile("\\b(using|treated|for|relief of|as needed|started|rx)\\b", Pattern.CASE_INSENSITIVE))
                 .relationType("treats")
                 .sourceTag("drug")
                 .targetTag("condition")
+                .build());
+
+        ruleMap.put("treats_symptom", PatternRule.builder()
+                .triggerPattern(Pattern.compile("\\b(using|treated|for|relief of|as needed|started|rx)\\b", Pattern.CASE_INSENSITIVE))
+                .relationType("treats")
+                .sourceTag("drug")
+                .targetTag("symptom")
                 .build());
         return ruleMap;
     }

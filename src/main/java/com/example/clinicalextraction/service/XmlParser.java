@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 @Component
 public class XmlParser {
 
-    private static long id = 1;
+    private long id = 1;
 
     private final SAXParser saxParser;
 
@@ -75,7 +75,7 @@ public class XmlParser {
             group.getEntities().add(entity);
         }
 
-        if (!group.getEntities().isEmpty()) {
+        if (!group.getEntities().isEmpty() && refIndex < references.size()) {
             group.setGroupId(id);
             group.setReference(references.get(refIndex).replaceAll("\\.$", ""));
             id++;

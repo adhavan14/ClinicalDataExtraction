@@ -1,0 +1,45 @@
+{
+  "groups": [
+    {
+      "groupId": 1,
+      "reference": "shortness of breath after stairs climbing",
+      "entities": [
+        { "tag": "symptom", "text": "shortness of breath", "start": 9, "end": 28 },
+        { "tag": "event", "text": "stairs climbing", "start": 36, "end": 51 }
+      ],
+      "suggestedRelation": {
+        "type": "triggered_by",
+        "source": "shortness of breath",
+        "targets": ["stairs climbing"]
+      }
+    },
+    {
+      "groupId": 2,
+      "reference": "Using Salbutamol 2 puffs via inhalation as needed for 1 week",
+      "entities": [
+        { "tag": "drug", "text": "Salbutamol", "start": 59, "end": 69 },
+        { "tag": "dosage", "text": "2 puffs", "start": 70, "end": 77 },
+        { "tag": "route", "text": "inhalation", "start": 82, "end": 92 },
+        { "tag": "duration", "text": "1 week", "start": 109, "end": 115 }
+      ],
+      "suggestedRelation": {
+        "type": "treats",
+        "source": "Salbutamol",
+        "targets": ["shortness of breath"]
+      }
+    },
+    {
+      "groupId": 3,
+      "reference": "tightness in chest",
+      "entities": [
+        { "tag": "condition", "text": "tightness", "start": 123, "end": 132 },
+        { "tag": "bodypart", "text": "chest", "start": 136, "end": 141 }
+      ],
+      "suggestedRelation": {
+        "type": "located_in",
+        "source": "tightness",
+        "targets": ["chest"]
+      }
+    }
+  ]
+}

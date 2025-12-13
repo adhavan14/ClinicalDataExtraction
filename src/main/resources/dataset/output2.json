@@ -1,0 +1,46 @@
+{
+  "groups": [
+    {
+      "groupId": 1,
+      "reference": "fever with chills and fatigue",
+      "entities": [
+        { "tag": "condition", "text": "fever", "start": 9, "end": 14 },
+        { "tag": "symptom", "text": "chills", "start": 21, "end": 27 },
+        { "tag": "symptom", "text": "fatigue", "start": 32, "end": 39 }
+      ],
+      "suggestedRelation": {
+        "type": "co_occurs_with",
+        "source": "fever",
+        "targets": ["chills", "fatigue"]
+      }
+    },
+    {
+      "groupId": 2,
+      "reference": "Took Azithromycin 500 mg via oral for 3 days",
+      "entities": [
+        { "tag": "drug", "text": "Azithromycin", "start": 46, "end": 58 },
+        { "tag": "dosage", "text": "500 mg", "start": 59, "end": 65 },
+        { "tag": "route", "text": "oral", "start": 70, "end": 74 },
+        { "tag": "duration", "text": "3 days", "start": 79, "end": 85 }
+      ],
+      "suggestedRelation": {
+        "type": "treats",
+        "source": "Azithromycin",
+        "targets": ["fever"]
+      }
+    },
+    {
+      "groupId": 3,
+      "reference": "Pain localized to lower back",
+      "entities": [
+        { "tag": "condition", "text": "Pain", "start": 88, "end": 92 },
+        { "tag": "bodypart", "text": "lower back", "start": 109, "end": 119 }
+      ],
+      "suggestedRelation": {
+        "type": "located_in",
+        "source": "Pain",
+        "targets": ["lower back"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+<root>
+  <condition>fever</condition> with <symptom>chills</symptom> and <symptom>fatigue</symptom>.
+  Took <drug>Azithromycin</drug> <dosage>500 mg</dosage> via <route>oral</route> for <duration>3 days</duration>.
+  <condition>Pain</condition> localized to <bodypart>lower back</bodypart>.
+</root>

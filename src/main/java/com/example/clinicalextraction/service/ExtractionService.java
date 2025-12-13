@@ -1,3 +1,4 @@
+// java
 package com.example.clinicalextraction.service;
 
 import com.example.clinicalextraction.Patterns;
@@ -8,12 +9,10 @@ import com.example.clinicalextraction.entity.PatternRule;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,7 +20,7 @@ public class ExtractionService {
 
     private final XmlParser xmlParser;
 
-    public  ExtractionService(XmlParser xmlParser) {
+    public ExtractionService(XmlParser xmlParser) {
         this.xmlParser = xmlParser;
     }
 
@@ -33,11 +32,20 @@ public class ExtractionService {
         List<Group> groups = new ArrayList<>();
 
         for (String chunk : chunks) {
-            groups.addAll(xmlParser.parseChunk(chunk));
+            List<Group> parsed = xmlParser.parseChunk(chunk);
+            groups.addAll(parsed);
         }
 
-        for (Group group : groups) {
-            Relation relation = inferRelation(group.getReference(), group.getEntities());
+        Map<String, List<Entity>> context = new HashMap<>();
+
+        for (int i = 0; i < groups.size(); i++) {
+            Group group = groups.get(i);
+
+            for (Entity e : group.getEntities()) {
+                context.computeIfAbsent(e.getTag().toLowerCase(), k -> new ArrayList<>()).add(e);
+            }
+
+            Relation relation = inferRelationWithContext(group.getReference(), group.getEntities(), context);
             group.setSuggestedRelation(relation);
         }
 
@@ -45,30 +53,46 @@ public class ExtractionService {
     }
 
 
-    public Relation inferRelation(String reference, List<Entity> entities) {
+    private Relation inferRelationWithContext(String sentenceText, List<Entity> entities, Map<String, List<Entity>> context) {
+        List<Entity> current = entities == null ? List.of() : entities;
 
         for (PatternRule rule : Patterns.relationTypePatterns().values()) {
+            boolean triggerMatched = rule.getTriggerPattern().matcher(sentenceText).find();
 
-            if (!rule.getTriggerPattern().matcher(reference).find()) continue;
+            Entity source = findFirstByTag(current, rule.getSourceTag());
+            if (source == null) source = getLastFromContext(context, rule.getSourceTag());
 
-            Entity source = entities.stream()
-                    .filter(e -> e.getTag().equals(rule.getSourceTag()))
-                    .findFirst().orElse(null);
-            if (source == null) continue;
-
-            List<String> targets = entities.stream()
-                    .filter(e -> e.getTag().equals(rule.getTargetTag()))
+            List<String> targets = current.stream()
+                    .filter(e -> e.getTag().equalsIgnoreCase(rule.getTargetTag()))
                     .map(Entity::getText)
                     .collect(Collectors.toList());
-            if (targets.isEmpty()) continue;
+            if (targets.isEmpty()) {
+                List<Entity> ctxTargets = context.getOrDefault(rule.getTargetTag().toLowerCase(), List.of());
+                targets = ctxTargets.stream().map(Entity::getText).collect(Collectors.toList());
+            }
 
-            return Relation.builder()
-                    .type(rule.getRelationType())
-                    .source(source.getText())
-                    .targets(targets)
-                    .build();
+            if (source != null && !targets.isEmpty() && triggerMatched) {
+                return Relation.builder()
+                        .type(rule.getRelationType())
+                        .source(source.getText())
+                        .targets(targets)
+                        .build();
+            }
         }
 
         return null;
+    }
+
+    private Entity findFirstByTag(List<Entity> entities, String tag) {
+        return entities.stream()
+                .filter(e -> e.getTag().equalsIgnoreCase(tag))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Entity getLastFromContext(Map<String, List<Entity>> context, String tag) {
+        List<Entity> list = context.get(tag.toLowerCase());
+        if (list == null || list.isEmpty()) return null;
+        return list.get(list.size() - 1);
     }
 }

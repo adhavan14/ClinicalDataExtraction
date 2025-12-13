@@ -1,0 +1,46 @@
+{
+  "groups": [
+    {
+      "groupId": 1,
+      "reference": "rash on left arm and neck",
+      "entities": [
+        { "tag": "condition", "text": "rash", "start": 9, "end": 13 },
+        { "tag": "bodypart", "text": "left arm", "start": 18, "end": 26 },
+        { "tag": "bodypart", "text": "neck", "start": 31, "end": 35 }
+      ],
+      "suggestedRelation": {
+        "type": "located_in",
+        "source": "rash",
+        "targets": ["left arm", "neck"]
+      }
+    },
+    {
+      "groupId": 2,
+      "reference": "Prescribed Amoxicillin 250 mg via oral for 5 days",
+      "entities": [
+        { "tag": "drug", "text": "Amoxicillin", "start": 49, "end": 60 },
+        { "tag": "dosage", "text": "250 mg", "start": 61, "end": 67 },
+        { "tag": "route", "text": "oral", "start": 72, "end": 76 },
+        { "tag": "duration", "text": "5 days", "start": 81, "end": 87 }
+      ],
+      "suggestedRelation": {
+        "type": "treats",
+        "source": "Amoxicillin",
+        "targets": ["rash"]
+      }
+    },
+    {
+      "groupId": 3,
+      "reference": "itching during night sleep",
+      "entities": [
+        { "tag": "symptom", "text": "itching", "start": 105, "end": 112 },
+        { "tag": "event", "text": "night sleep", "start": 121, "end": 132 }
+      ],
+      "suggestedRelation": {
+        "type": "causes",
+        "source": "Amoxicillin",
+        "targets": ["itching"]
+      }
+    }
+  ]
+}
