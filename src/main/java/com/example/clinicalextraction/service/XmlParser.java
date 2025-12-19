@@ -17,7 +17,11 @@ import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,40 +54,120 @@ public class XmlParser {
 
         List<String> reference = extractReference(chunk);
 
-        return buildGroups(reference, clinicalXMLHandler);
+        return buildGroups(clinicalXMLHandler.entities, reference, chunk);
     }
 
-    private List<Group> buildGroups(List<String> references, ClinicalXMLHandler clinicalXMLHandler) {
+    private List<Group> buildGroups(List<Entity> entities, List<String> references, String chunk) {
+
         List<Group> groups = new ArrayList<>();
-        Group group = Group.builder().build();
-        group.setEntities(new ArrayList<>());
+        Group currentGroup = newGroup();
+
+        RelationContext ctx = new RelationContext();
         int refIndex = 0;
 
-        for (Entity entity : clinicalXMLHandler.entities) {
-            if (Patterns.getTriggersForGroup().contains(entity.getTag().toLowerCase())) {
-                if (!group.getEntities().isEmpty()) {
-                    group.setGroupId(id);
-                    System.out.println(refIndex + " " + group.getGroupId() + " " + references.size());
-                    group.setReference(references.get(refIndex).replaceAll("\\.$", ""));
-                    refIndex++;
-                    id++;
-                    groups.add(group);
+        for (Entity entity : entities) {
+
+            PatternRule rule = findRuleForEntity(entity);
+
+            if (rule != null) {
+
+                // 🔥 SPLIT CONDITION (TEXT-AWARE)
+                if (entity.getTag().equals(rule.getSourceTag())
+                        && ctx.rule != null
+                        && ctx.rule.equals(rule)
+                        && rule.isSplitOnNewSource()
+                        && ctx.hasTargets()) {
+
+                    // check conjunction boundary in raw text span
+                    String betweenText = extractTextBetween(
+                            ctx.lastTargetEnd,
+                            entity.getStart(),
+                            chunk
+                    );
+
+                    System.out.println("Between Text: '" + betweenText + "'");
+
+                    if (rule.getConjunctionBoundary()
+                            .matcher(betweenText)
+                            .find()) {
+
+                        finalizeGroup(currentGroup, references, refIndex++, groups);
+                        currentGroup = newGroup();
+                        ctx.reset();
+                    }
                 }
-                group = Group.builder().build();
-                group.setEntities(new ArrayList<>());
+
+                if (entity.getTag().equals(rule.getSourceTag())) {
+                    ctx.rule = rule;
+                    ctx.source = entity;
+                }
+
+                if (entity.getTag().equals(rule.getTargetTag())) {
+                    ctx.targets.add(entity);
+                    ctx.lastTargetEnd = entity.getEnd();
+                }
             }
-            group.getEntities().add(entity);
+
+            currentGroup.getEntities().add(entity);
         }
 
-        if (!group.getEntities().isEmpty()) {
-            group.setGroupId(id);
-            group.setReference(references.get(refIndex).replaceAll("\\.$", ""));
-            id++;
-            groups.add(group);
+
+        if (!currentGroup.getEntities().isEmpty() && refIndex < references.size()) {
+            finalizeGroup(currentGroup, references, refIndex, groups);
         }
 
         return groups;
     }
+
+    private String extractTextBetween(int start, int end, String reference) {
+        if (start < 0 || end <= start) return "";
+        return reference.substring(start, end);
+    }
+
+    private PatternRule findRuleForEntity(Entity entity) {
+        return Patterns.relationTypePatterns()
+                .values()
+                .stream()
+                .filter(rule ->
+                        entity.getTag().equals(rule.getSourceTag())
+                                || entity.getTag().equals(rule.getTargetTag())
+                )
+                .findFirst()
+                .orElse(null);
+    }
+
+    private static class RelationContext {
+
+        PatternRule rule;
+        Entity source;
+        List<Entity> targets = new ArrayList<>();
+        int lastTargetEnd = -1;
+
+        boolean hasTargets() {
+            return !targets.isEmpty();
+        }
+
+        void reset() {
+            rule = null;
+            source = null;
+            targets.clear();
+            lastTargetEnd = -1;
+        }
+    }
+
+
+    private Group newGroup() {
+        Group g = Group.builder().build();
+        g.setEntities(new ArrayList<>());
+        return g;
+    }
+
+    private void finalizeGroup(Group group, List<String> references, int index, List<Group> groups) {
+        group.setGroupId(groups.size() + 1L);
+        group.setReference(references.get(index).replaceAll("\\.$", ""));
+        groups.add(group);
+    }
+
 
     public List<String> chunkXml(String xml) {
         List<String> chunks = new ArrayList<>();
@@ -102,4 +186,5 @@ public class XmlParser {
 
         return chunks;
     }
+
 }

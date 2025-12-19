@@ -16,4 +16,10 @@ public class PatternRule {
     private String sourceTag;
 
     private String targetTag;
+
+    private boolean allowMultipleTargets;
+
+    private boolean splitOnNewSource;
+
+    private Pattern conjunctionBoundary;
 }

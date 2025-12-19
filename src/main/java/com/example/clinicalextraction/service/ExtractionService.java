@@ -30,6 +30,8 @@ public class ExtractionService {
 
         List<String> chunks = xmlParser.chunkXml(xml);
 
+        System.out.println("Total Chunks: " + chunks.size());
+
         List<Group> groups = new ArrayList<>();
 
         for (String chunk : chunks) {
