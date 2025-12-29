@@ -40,7 +40,7 @@ public class XmlParser {
                 .collect(Collectors.toList());
     }
 
-    public List<Group> parseChunk(String chunk) throws SAXException, IOException {
+    public Group parseChunk(String chunk) throws SAXException, IOException {
 
         ClinicalXMLHandler clinicalXMLHandler = new ClinicalXMLHandler();
 
@@ -48,41 +48,29 @@ public class XmlParser {
 
         saxParser.parse(new InputSource(new StringReader(wrappedChunk)), clinicalXMLHandler);
 
-        List<String> reference = extractReference(chunk);
+        String reference = chunk.replaceAll("<[^>]+>", "").trim();
 
+        System.out.println(reference);
+
+//        List<String> reference = extractReference(chunk);
+//
         return buildGroups(reference, clinicalXMLHandler);
     }
 
-    private List<Group> buildGroups(List<String> references, ClinicalXMLHandler clinicalXMLHandler) {
+    private Group buildGroups(String references, ClinicalXMLHandler clinicalXMLHandler) {
         List<Group> groups = new ArrayList<>();
         Group group = Group.builder().build();
         group.setEntities(new ArrayList<>());
-        int refIndex = 0;
 
         for (Entity entity : clinicalXMLHandler.entities) {
-            if (Patterns.getTriggersForGroup().contains(entity.getTag().toLowerCase())) {
-                if (!group.getEntities().isEmpty()) {
-                    group.setGroupId(id);
-                    System.out.println(refIndex + " " + group.getGroupId() + " " + references.size());
-                    group.setReference(references.get(refIndex).replaceAll("\\.$", ""));
-                    refIndex++;
-                    id++;
-                    groups.add(group);
-                }
-                group = Group.builder().build();
-                group.setEntities(new ArrayList<>());
-            }
             group.getEntities().add(entity);
         }
 
-        if (!group.getEntities().isEmpty()) {
-            group.setGroupId(id);
-            group.setReference(references.get(refIndex).replaceAll("\\.$", ""));
-            id++;
-            groups.add(group);
-        }
+        group.setGroupId(id);
+        group.setReference(references);
+        id++;
 
-        return groups;
+        return group;
     }
 
     public List<String> chunkXml(String xml) {
