@@ -1,5 +1,6 @@
 package com.example.clinicalextraction;
 
+import com.example.clinicalextraction.dto.Direction;
 import com.example.clinicalextraction.entity.PatternRule;
 
 import java.util.HashMap;
@@ -9,12 +10,6 @@ import java.util.regex.Pattern;
 
 public class Patterns {
 
-    public static List<String> getTriggersForGroup() {
-        return List.of(
-                "condition"
-        );
-    }
-
     public static Map<String, List<PatternRule>> relationTypePatterns() {
         Map<String, List<PatternRule>> ruleMap = new HashMap<>();
 
@@ -23,18 +18,21 @@ public class Patterns {
                         .relationType("located_in")
                         .sourceTag("symptom")
                         .targetTag("bodypart")
+                        .direction(Direction.LEFT)
                 .build(),
                 PatternRule.builder()
                         .triggerPattern(Pattern.compile("\\b(in|on|at|over)\\b"))
                         .relationType("located_in")
                         .sourceTag("condition")
                         .targetTag("bodypart")
+                        .direction(Direction.LEFT)
                         .build(),
                 PatternRule.builder()
                         .triggerPattern(Pattern.compile("\\b(in|with)\\b"))
                         .relationType("located_in")
                         .sourceTag("bodypart")
                         .targetTag("symptom")
+                        .direction(Direction.RIGHT)
                         .build()));
 
         ruleMap.put("causes", List.of(PatternRule.builder()
@@ -48,6 +46,7 @@ public class Patterns {
                         .relationType("causes")
                         .sourceTag("drug")
                         .targetTag("symptom")
+                        .direction(Direction.RIGHT)
                         .build()));
 
         ruleMap.put("revealed_by", List.of(PatternRule.builder()
@@ -55,6 +54,7 @@ public class Patterns {
                 .relationType("revealed_by")
                 .sourceTag("condition")
                 .targetTag("event")
+                .direction(Direction.LEFT)
                 .build()));
 
         ruleMap.put("detected_by", List.of(PatternRule.builder()
@@ -62,13 +62,15 @@ public class Patterns {
                 .relationType("detected_by")
                 .sourceTag("symptom")
                 .targetTag("event")
+                .direction(Direction.LEFT)
                 .build()));
 
         ruleMap.put("treats", List.of(PatternRule.builder()
-                .triggerPattern(Pattern.compile("\\b(treated|for|relief of)\\b"))
+                .triggerPattern(Pattern.compile("\\b(treated|for|relief of|after taking)\\b"))
                 .relationType("treats")
                 .sourceTag("drug")
                 .targetTag("condition")
+                .direction(Direction.RIGHT)
                 .build()));
 
         return ruleMap;

@@ -8,7 +8,6 @@ import com.example.clinicalextraction.entity.PatternRule;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -23,8 +22,11 @@ public class ExtractionService {
 
     private final XmlParser xmlParser;
 
-    public  ExtractionService(XmlParser xmlParser) {
+    private RelationExtractionService relationExtractionService;
+
+    public  ExtractionService(XmlParser xmlParser, RelationExtractionService relationExtractionService) {
         this.xmlParser = xmlParser;
+        this.relationExtractionService = relationExtractionService;
     }
 
     public List<Group> extractRelations(String xmlFilePath) throws IOException, SAXException {
@@ -39,7 +41,11 @@ public class ExtractionService {
         }
 
         for (Group group : groups) {
-            List<Relation> relation = inferRelation(group.getReference(), group.getEntities());
+            List<Relation> relation = relationExtractionService.extractRelations(
+                    group.getReference(),
+                    group.getEntities(),
+                    Patterns.relationTypePatterns()
+            );
             group.setSuggestedRelation(relation);
         }
 
@@ -63,7 +69,6 @@ public class ExtractionService {
                                 int entityPos = reference.indexOf(e.getText());
                                 if (entityPos >= triggerPos) return false;
 
-                                // Check for conjunction between entity and trigger
                                 String between = reference.substring(entityPos + e.getText().length(), triggerPos);
                                 return !between.matches(".*\\b(and|or)\\b.*");
                             })
@@ -72,17 +77,14 @@ public class ExtractionService {
 
                     if (source == null) continue;
 
-                    // Find next conjunction or trigger after current trigger
                     int nextConjunction = findNextPattern(reference, triggerPos, "\\b(and|or)\\b");
                     int nextTrigger = findNextTrigger(reference, matcher.end(), rule.getTriggerPattern());
 
-                    // Use the closest boundary
                     int boundary = Math.min(
                             nextConjunction != -1 ? nextConjunction : reference.length(),
                             nextTrigger != -1 ? nextTrigger : reference.length()
                     );
 
-                    // Find target entities after trigger up to boundary
                     List<String> targets = entities.stream()
                             .filter(e -> e.getTag().equals(rule.getTargetTag()))
                             .filter(e -> {

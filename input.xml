@@ -1,18 +1,5 @@
 <root>
-    <condition>pain</condition>
-    in <bodypart>right leg</bodypart>, <bodypart>left leg</bodypart> and <condition>ulcer</condition> in <bodypart>
-    foot</bodypart>.
-
-    The patient reported <condition>severe headache</condition> after taking <drug>Ibuprofen</drug>
-    <dosage>400 mg</dosage> via <route>oral</route> route for <duration>3 days</duration>, which also caused <symptom>
-    nausea
-    </symptom> and <symptom>dizziness</symptom> during <event>morning activity</event>.
-
-        The patient also experienced <condition>vomiting</condition> after taking <drug>Paracetamol</drug>
-        <dosage>650 mg</dosage> via <route>oral</route> route for <duration>2 days</duration>.
-
-        Later, <symptom>blurred vision</symptom> was reported during <event>evening walking</event> after the use of <drug>
-        Metformin
-    </drug>
-    <dosage>500 mg</dosage>.
+    28-year-old female, gravida 2 para 1, at 32 weeks gestation presenting with <symptom>severe headache</symptom>, 
+    <symptom>visual disturbances</symptom> with <symptom>seeing spots</symptom>, and <symptom>upper abdominal pain</symptom> 
+    in <bodypart>right upper quadrant</bodypart>.
 </root>

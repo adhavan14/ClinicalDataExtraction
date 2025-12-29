@@ -5,6 +5,8 @@ import lombok.Data;
 
 import java.util.regex.Pattern;
 
+import com.example.clinicalextraction.dto.Direction;
+
 @Data
 @Builder
 public class PatternRule {
@@ -16,4 +18,6 @@ public class PatternRule {
     private String sourceTag;
 
     private String targetTag;
+
+    private Direction direction;
 }
