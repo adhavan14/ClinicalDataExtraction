@@ -1,6 +1,6 @@
 package com.example.clinicalextraction.service;
 
-import com.example.clinicalextraction.Patterns;
+import com.example.clinicalextraction.util.Patterns;
 import com.example.clinicalextraction.dto.Entity;
 import com.example.clinicalextraction.dto.Group;
 import com.example.clinicalextraction.dto.Relation;
@@ -8,7 +8,6 @@ import com.example.clinicalextraction.entity.PatternRule;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -38,7 +37,7 @@ public class ExtractionService {
 
         for (Group group : groups) {
             Relation relation = inferRelation(group.getReference(), group.getEntities());
-            group.setSuggestedRelation(relation);
+            group.setSuggestedRelation(List.of(relation));
         }
 
         return groups;

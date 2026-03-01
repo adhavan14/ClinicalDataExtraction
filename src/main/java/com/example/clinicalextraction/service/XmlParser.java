@@ -1,10 +1,8 @@
 package com.example.clinicalextraction.service;
 
-import com.example.clinicalextraction.Patterns;
+import com.example.clinicalextraction.util.Patterns;
 import com.example.clinicalextraction.dto.Entity;
 import com.example.clinicalextraction.dto.Group;
-import com.example.clinicalextraction.dto.Relation;
-import com.example.clinicalextraction.entity.PatternRule;
 import org.springframework.stereotype.Component;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -14,8 +12,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.io.StringReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,6 +49,37 @@ public class XmlParser {
         return buildGroups(reference, clinicalXMLHandler);
     }
 
+    public Group parseChunk1(String chunk) throws SAXException, IOException {
+
+        ClinicalXMLHandler clinicalXMLHandler = new ClinicalXMLHandler();
+
+        String wrappedChunk = "<root>" + chunk + "</root>";
+
+        saxParser.parse(new InputSource(new StringReader(wrappedChunk)), clinicalXMLHandler);
+
+        String reference = chunk.replaceAll("<[^>]+>", "").trim();
+
+        System.out.println(reference);
+
+        return buildGroups(reference, clinicalXMLHandler);
+    }
+
+    private Group buildGroups(String references, ClinicalXMLHandler clinicalXMLHandler) {
+
+        Group group = Group.builder().build();
+        group.setEntities(new ArrayList<>());
+
+        for (Entity entity : clinicalXMLHandler.entities) {
+            group.getEntities().add(entity);
+        }
+
+        group.setGroupId(id);
+        group.setReference(references);
+        id++;
+
+        return group;
+    }
+
     private List<Group> buildGroups(List<String> references, ClinicalXMLHandler clinicalXMLHandler) {
         List<Group> groups = new ArrayList<>();
         Group group = Group.builder().build();
@@ -60,7 +87,7 @@ public class XmlParser {
         int refIndex = 0;
 
         for (Entity entity : clinicalXMLHandler.entities) {
-            if (Patterns.getTriggersForGroup().contains(entity.getTag().toLowerCase())) {
+//            if (Patterns.getTriggersForGroup().contains(entity.getTag().toLowerCase())) {
                 if (!group.getEntities().isEmpty()) {
                     group.setGroupId(id);
                     System.out.println(refIndex + " " + group.getGroupId() + " " + references.size());
@@ -71,7 +98,7 @@ public class XmlParser {
                 }
                 group = Group.builder().build();
                 group.setEntities(new ArrayList<>());
-            }
+//            }
             group.getEntities().add(entity);
         }
 

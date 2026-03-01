@@ -1,5 +1,7 @@
-package com.example.clinicalextraction;
+package com.example.clinicalextraction.util;
 
+import com.example.clinicalextraction.entity.Direction;
+import com.example.clinicalextraction.entity.GroupingStrategy;
 import com.example.clinicalextraction.entity.PatternRule;
 
 import java.util.HashMap;
@@ -9,12 +11,6 @@ import java.util.regex.Pattern;
 
 public class Patterns {
 
-    public static List<String> getTriggersForGroup() {
-        return List.of(
-                "condition"
-        );
-    }
-
     public static Map<String, PatternRule> relationTypePatterns() {
         Map<String, PatternRule> ruleMap = new HashMap<>();
 
@@ -23,6 +19,9 @@ public class Patterns {
                 .relationType("located_in")
                 .sourceTag("condition")
                 .targetTag("bodypart")
+                .direction(Direction.RIGHT)
+                .groupingStrategy(GroupingStrategy.SCOPE_UNTIL_NEXT)
+                .maxTokenDistance(100)
                 .build());
 
         ruleMap.put("causes", PatternRule.builder()
@@ -30,6 +29,9 @@ public class Patterns {
                 .relationType("causes")
                 .sourceTag("drug")
                 .targetTag("symptom")
+                .direction(Direction.RIGHT)
+                .groupingStrategy(GroupingStrategy.SCOPE_UNTIL_NEXT)
+                .maxTokenDistance(100)
                 .build());
 
         ruleMap.put("treats", PatternRule.builder()
@@ -37,6 +39,9 @@ public class Patterns {
                 .relationType("treats")
                 .sourceTag("drug")
                 .targetTag("condition")
+                .direction(Direction.RIGHT)
+                .groupingStrategy(GroupingStrategy.SCOPE_UNTIL_NEXT)
+                .maxTokenDistance(100)
                 .build());
         return ruleMap;
     }
