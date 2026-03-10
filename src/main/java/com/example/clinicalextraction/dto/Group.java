@@ -17,6 +17,6 @@ public class Group {
 
     private List<Entity> entities;
 
-    private Relation suggestedRelation;
+    private List<Relation> suggestedRelation;
 
 }
