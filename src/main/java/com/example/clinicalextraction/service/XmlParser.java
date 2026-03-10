@@ -1,8 +1,11 @@
 package com.example.clinicalextraction.service;
 
+import com.example.clinicalextraction.dto.Relation;
+import com.example.clinicalextraction.entity.PatternRule;
 import com.example.clinicalextraction.util.Patterns;
 import com.example.clinicalextraction.dto.Entity;
 import com.example.clinicalextraction.dto.Group;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -12,8 +15,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,6 +48,8 @@ public class XmlParser {
 
         List<String> reference = extractReference(chunk);
 
+        process(clinicalXMLHandler);
+
         return buildGroups(reference, clinicalXMLHandler);
     }
 
@@ -60,6 +64,8 @@ public class XmlParser {
         String reference = chunk.replaceAll("<[^>]+>", "").trim();
 
         System.out.println(reference);
+
+//        return process(clinicalXMLHandler);
 
         return buildGroups(reference, clinicalXMLHandler);
     }
@@ -77,7 +83,73 @@ public class XmlParser {
         group.setReference(references);
         id++;
 
+        group.setSuggestedRelation(process(clinicalXMLHandler));
+
         return group;
+    }
+
+    private List<Relation> process(ClinicalXMLHandler clinicalXMLHandler) {
+
+        Map<String, PatternRule> ruleMap = new HashMap<>();
+        ruleMap.put("located_in", PatternRule.builder()
+                .sourceTag("condition")
+                .targetTag("bodypart")
+                .build());
+
+        ruleMap.put("treats", PatternRule.builder()
+                .sourceTag("drug")
+                .targetTag("condition")
+                .build());
+
+        List<Relation> relations = new ArrayList<>();
+        for (Map.Entry<String, PatternRule> map : ruleMap.entrySet()) {
+            relations.addAll(getRelations(clinicalXMLHandler, map.getKey(), map.getValue()));
+        }
+
+        return relations;
+    }
+
+    private static @NonNull List<Relation> getRelations(
+            ClinicalXMLHandler handler,
+            String relationType,
+            PatternRule rule) {
+
+        List<Relation> relations = new ArrayList<>();
+
+        List<String> currentSources = new ArrayList<>();
+        List<String> currentTargets = new ArrayList<>();
+
+        for (Entity entity : handler.entities) {
+
+            if (entity.getTag().equals(rule.getSourceTag())) {
+
+                if (!currentSources.isEmpty() && !currentTargets.isEmpty()) {
+                    relations.add(Relation.builder()
+                            .type(relationType)
+                            .source(new ArrayList<>(currentSources))
+                            .targets(new ArrayList<>(currentTargets))
+                            .build());
+                    currentTargets.clear();
+                    currentSources.clear();
+                }
+
+                currentSources.add(entity.getText());
+            }
+
+            else if (entity.getTag().equals(rule.getTargetTag())) {
+                currentTargets.add(entity.getText());
+            }
+        }
+
+        if (!currentSources.isEmpty() && !currentTargets.isEmpty()) {
+            relations.add(Relation.builder()
+                    .type(relationType)
+                    .source(currentSources)
+                    .targets(currentTargets)
+                    .build());
+        }
+
+        return relations;
     }
 
     private List<Group> buildGroups(List<String> references, ClinicalXMLHandler clinicalXMLHandler) {

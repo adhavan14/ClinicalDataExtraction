@@ -21,7 +21,7 @@ public class Patterns {
                 .targetTag("bodypart")
                 .direction(Direction.RIGHT)
                 .groupingStrategy(GroupingStrategy.SCOPE_UNTIL_NEXT)
-                .maxTokenDistance(100)
+
                 .build());
 
         ruleMap.put("causes", PatternRule.builder()

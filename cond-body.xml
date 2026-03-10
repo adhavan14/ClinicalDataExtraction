@@ -1,0 +1,10 @@
+<root>
+    <condition>pain</condition> in <bodypart>leg</bodypart> and <condition>swelling</condition> in <bodypart>ankle</bodypart>.
+    <condition>pain</condition> in <bodypart>right leg</bodypart> and <bodypart>left leg</bodypart>.
+    <condition>pain</condition> and <condition>swelling</condition> in <bodypart>knee</bodypart>.
+    <condition>rash</condition> on <bodypart>face</bodypart>, <bodypart>neck</bodypart>, and <bodypart>chest</bodypart>.
+    <bodypart>shoulder</bodypart> affected by <condition>pain</condition>.
+    The patient reported <condition>severe pain</condition> in the <bodypart>lower back</bodypart> during <event>morning exercise</event>.
+    <condition>ulcer</condition> involving <bodypart>foot</bodypart> and <bodypart>toes</bodypart>.
+    <condition>pain</condition> and <condition>stiffness</condition> in <bodypart>neck</bodypart> and <bodypart>shoulders</bodypart>.
+</root>

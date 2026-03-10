@@ -1,0 +1,7 @@
+<root>
+    After taking <drug>Ibuprofen</drug>, the patient developed <condition>gastric irritation</condition>.
+    <condition>Headache</condition> occurred after taking <drug>Metformin</drug>.
+    After taking <drug>Metformin</drug>, the patient developed <condition>nausea</condition> and <condition>vomiting</condition>.
+    <drug>Ibuprofen</drug> and <drug>Aspirin</drug> treated <condition>inflammation</condition>.
+    <drug>Ibuprofen</drug> and <drug>Paracetamol</drug> treated <condition>fever</condition> and <condition>headache</condition>.
+</root>

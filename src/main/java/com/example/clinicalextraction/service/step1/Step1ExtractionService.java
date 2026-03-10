@@ -37,16 +37,16 @@ public class Step1ExtractionService {
         for (String chunk : chunks) {
             groups.add(xmlParser.parseChunk1(chunk));
         }
-
-        for (Group group : groups) {
-            List<Relation> relation = extractRelations(
-                    group.getReference(),
-                    group.getEntities(),
-                    Patterns.relationTypePatterns()
-            );
-            group.setSuggestedRelation(relation);
-        }
-
+//
+//        for (Group group : groups) {
+//            List<Relation> relation = extractRelations(
+//                    group.getReference(),
+//                    group.getEntities(),
+//                    Patterns.relationTypePatterns()
+//            );
+//            group.setSuggestedRelation(relation);
+//        }
+//
         return groups;
     }
 
@@ -102,7 +102,7 @@ public class Step1ExtractionService {
 
         Relation relation = Relation.builder()
                 .type(rule.getRelationType())
-                .source(source.getText())
+                .source(List.of(source.getText()))
                 .targets(new ArrayList<>())
                 .build();
 

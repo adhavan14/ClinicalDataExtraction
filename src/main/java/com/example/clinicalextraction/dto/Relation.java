@@ -13,7 +13,7 @@ public class Relation {
 
     private String type;
 
-    private String source;
+    private List<String> source;
 
     private List<String> targets;
 }

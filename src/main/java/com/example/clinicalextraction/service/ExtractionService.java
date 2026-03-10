@@ -63,7 +63,7 @@ public class ExtractionService {
 
             return Relation.builder()
                     .type(rule.getRelationType())
-                    .source(source.getText())
+                    .source(List.of(source.getText()))
                     .targets(targets)
                     .build();
         }

@@ -1,6 +1,7 @@
 package com.example.clinicalextraction.controller;
 
 import com.example.clinicalextraction.dto.Group;
+import com.example.clinicalextraction.dto.Relation;
 import com.example.clinicalextraction.service.ExtractionService;
 import com.example.clinicalextraction.service.step1.Step1ExtractionService;
 import org.springframework.http.ResponseEntity;
