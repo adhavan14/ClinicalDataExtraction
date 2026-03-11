@@ -26,6 +26,12 @@ public class XmlParser {
 
     private final SAXParser saxParser;
 
+    private List<Entity> entities = new ArrayList<>();
+
+    private Group group = Group.builder().build();
+
+    private StringBuilder references = new StringBuilder();
+
     public XmlParser() throws ParserConfigurationException, SAXException {
         SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
         saxParser = saxParserFactory.newSAXParser();
@@ -48,12 +54,12 @@ public class XmlParser {
 
         List<String> reference = extractReference(chunk);
 
-        process(clinicalXMLHandler);
+        process();
 
         return buildGroups(reference, clinicalXMLHandler);
     }
 
-    public Group parseChunk1(String chunk) throws SAXException, IOException {
+    public void parseChunk1(String chunk, List<Group> groups) throws SAXException, IOException {
 
         ClinicalXMLHandler clinicalXMLHandler = new ClinicalXMLHandler();
 
@@ -63,32 +69,30 @@ public class XmlParser {
 
         String reference = chunk.replaceAll("<[^>]+>", "").trim();
 
-        System.out.println(reference);
-
-//        return process(clinicalXMLHandler);
-
-        return buildGroups(reference, clinicalXMLHandler);
+        buildGroups(reference, clinicalXMLHandler, groups);
     }
 
-    private Group buildGroups(String references, ClinicalXMLHandler clinicalXMLHandler) {
+    private void buildGroups(String reference, ClinicalXMLHandler clinicalXMLHandler, List<Group> groups) {
 
-        Group group = Group.builder().build();
-        group.setEntities(new ArrayList<>());
+        entities.addAll(clinicalXMLHandler.entities);
+        references.append(reference).append(" ");
+        List<Relation> relations = process();
 
-        for (Entity entity : clinicalXMLHandler.entities) {
-            group.getEntities().add(entity);
+        if (!relations.isEmpty()) {
+            group.setEntities(entities);
+            group.setGroupId(id);
+            group.setReference(references.toString().trim());
+            group.setSuggestedRelation(relations);
+            id++;
+            groups.add(group);
+            group = Group.builder().build();
+            references.delete(0, references.length());
+            entities = new ArrayList<>();
         }
 
-        group.setGroupId(id);
-        group.setReference(references);
-        id++;
-
-        group.setSuggestedRelation(process(clinicalXMLHandler));
-
-        return group;
     }
 
-    private List<Relation> process(ClinicalXMLHandler clinicalXMLHandler) {
+    private List<Relation> process() {
 
         Map<String, PatternRule> ruleMap = new HashMap<>();
         ruleMap.put("located_in", PatternRule.builder()
@@ -103,14 +107,13 @@ public class XmlParser {
 
         List<Relation> relations = new ArrayList<>();
         for (Map.Entry<String, PatternRule> map : ruleMap.entrySet()) {
-            relations.addAll(getRelations(clinicalXMLHandler, map.getKey(), map.getValue()));
+            relations.addAll(getRelations(map.getKey(), map.getValue()));
         }
 
         return relations;
     }
 
-    private static @NonNull List<Relation> getRelations(
-            ClinicalXMLHandler handler,
+    private @NonNull List<Relation> getRelations(
             String relationType,
             PatternRule rule) {
 
@@ -119,7 +122,7 @@ public class XmlParser {
         List<String> currentSources = new ArrayList<>();
         List<String> currentTargets = new ArrayList<>();
 
-        for (Entity entity : handler.entities) {
+        for (Entity entity : entities) {
 
             if (entity.getTag().equals(rule.getSourceTag())) {
 

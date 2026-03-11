@@ -12,10 +12,7 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class Step1ExtractionService {
@@ -35,20 +32,12 @@ public class Step1ExtractionService {
         List<Group> groups = new ArrayList<>();
 
         for (String chunk : chunks) {
-            groups.add(xmlParser.parseChunk1(chunk));
+            xmlParser.parseChunk1(chunk, groups);
         }
-//
-//        for (Group group : groups) {
-//            List<Relation> relation = extractRelations(
-//                    group.getReference(),
-//                    group.getEntities(),
-//                    Patterns.relationTypePatterns()
-//            );
-//            group.setSuggestedRelation(relation);
-//        }
-//
+
         return groups;
     }
+
 
 
     public List<Relation> extractRelations(

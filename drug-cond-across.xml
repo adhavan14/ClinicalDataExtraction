@@ -1,0 +1,21 @@
+<root>
+
+    The patient started <drug>Metformin</drug>
+    <dosage>500 mg</dosage> via <route>oral</route> route.
+
+    Later, the patient developed <condition>nausea</condition>.
+
+    The doctor prescribed <drug>Amoxicillin</drug>
+    <dosage>250 mg</dosage> for infection.
+
+    After two days, <condition>skin rash</condition> appeared.
+
+    The patient began treatment with <drug>Lisinopril</drug>.
+
+    Soon after, the patient experienced <condition>persistent cough</condition>.
+
+    <drug>Ibuprofen</drug> was administered for pain relief.
+
+    Subsequently, the patient developed <condition>gastric irritation</condition>.
+
+</root>
