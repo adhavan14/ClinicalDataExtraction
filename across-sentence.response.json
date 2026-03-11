@@ -1,0 +1,172 @@
+[
+  {
+    "entities": [
+      {
+        "end": 29,
+        "start": 20,
+        "tag": "drug",
+        "text": "Metformin"
+      },
+      {
+        "end": 40,
+        "start": 34,
+        "tag": "dosage",
+        "text": "500 mg"
+      },
+      {
+        "end": 49,
+        "start": 45,
+        "tag": "route",
+        "text": "oral"
+      },
+      {
+        "end": 35,
+        "start": 29,
+        "tag": "condition",
+        "text": "nausea"
+      }
+    ],
+    "groupId": 1,
+    "reference": "The patient started Metformin\n    500 mg via oral route. Later, the patient developed nausea.",
+    "suggestedRelation": [
+      {
+        "source": [
+          "Metformin"
+        ],
+        "targets": [
+          "nausea"
+        ],
+        "type": "treats"
+      }
+    ]
+  },
+  {
+    "entities": [
+      {
+        "end": 33,
+        "start": 22,
+        "tag": "drug",
+        "text": "Amoxicillin"
+      },
+      {
+        "end": 44,
+        "start": 38,
+        "tag": "dosage",
+        "text": "250 mg"
+      },
+      {
+        "end": 25,
+        "start": 16,
+        "tag": "condition",
+        "text": "skin rash"
+      }
+    ],
+    "groupId": 2,
+    "reference": "The doctor prescribed Amoxicillin\n    250 mg for infection. After two days, skin rash appeared.",
+    "suggestedRelation": [
+      {
+        "source": [
+          "Amoxicillin"
+        ],
+        "targets": [
+          "skin rash"
+        ],
+        "type": "treats"
+      }
+    ]
+  },
+  {
+    "entities": [
+      {
+        "end": 43,
+        "start": 33,
+        "tag": "drug",
+        "text": "Lisinopril"
+      },
+      {
+        "end": 52,
+        "start": 36,
+        "tag": "condition",
+        "text": "persistent cough"
+      }
+    ],
+    "groupId": 3,
+    "reference": "The patient began treatment with Lisinopril. Soon after, the patient experienced persistent cough.",
+    "suggestedRelation": [
+      {
+        "source": [
+          "Lisinopril"
+        ],
+        "targets": [
+          "persistent cough"
+        ],
+        "type": "treats"
+      }
+    ]
+  },
+  {
+    "entities": [
+      {
+        "end": 9,
+        "start": 0,
+        "tag": "drug",
+        "text": "Ibuprofen"
+      },
+      {
+        "end": 54,
+        "start": 36,
+        "tag": "condition",
+        "text": "gastric irritation"
+      }
+    ],
+    "groupId": 4,
+    "reference": "Ibuprofen was administered for pain relief. Subsequently, the patient developed gastric irritation.",
+    "suggestedRelation": [
+      {
+        "source": [
+          "Ibuprofen"
+        ],
+        "targets": [
+          "gastric irritation"
+        ],
+        "type": "treats"
+      }
+    ]
+  },
+  {
+    "entities": [
+      {
+        "end": 38,
+        "start": 29,
+        "tag": "drug",
+        "text": "Ibuprofen"
+      },
+      {
+        "end": 54,
+        "start": 43,
+        "tag": "drug",
+        "text": "Paracetamol"
+      },
+      {
+        "end": 25,
+        "start": 7,
+        "tag": "condition",
+        "text": "stomach irritation"
+      }
+    ],
+    "groupId": 5,
+    "reference": "The patient was treated with Ibuprofen and Paracetamol. Later, stomach irritation developed.",
+    "suggestedRelation": [
+      {
+        "source": [
+          "Ibuprofen",
+          "Paracetamol"
+        ],
+        "targets": [
+          "stomach irritation"
+        ],
+        "type": "treats"
+      }
+    ]
+  }
+]
