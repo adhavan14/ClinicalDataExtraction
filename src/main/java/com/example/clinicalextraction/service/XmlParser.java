@@ -105,6 +105,11 @@ public class XmlParser {
                 .targetTag("condition")
                 .build());
 
+        ruleMap.put("cause", PatternRule.builder()
+                .sourceTag("drug")
+                .targetTag("symptom")
+                .build());
+
         List<Relation> relations = new ArrayList<>();
         for (Map.Entry<String, PatternRule> map : ruleMap.entrySet()) {
             relations.addAll(getRelations(map.getKey(), map.getValue()));
