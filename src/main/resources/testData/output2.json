@@ -1,0 +1,32 @@
+{
+  "relationEvidences": [
+    {
+      "condition": "asthma",
+      "confidence": 1.0999999999999999,
+      "dependencyPaths": [
+        "dependency_connection"
+      ],
+      "distance": 1,
+      "drug": "Salbutamol",
+      "keywords": [
+        "treat"
+      ],
+      "proximity": "ADJACENT",
+      "relationType": "treats"
+    },
+    {
+      "condition": "infection",
+      "confidence": 1.2,
+      "dependencyPaths": [
+        "dependency_connection"
+      ],
+      "distance": 0,
+      "drug": "Amoxicillin",
+      "keywords": [
+        "give"
+      ],
+      "proximity": "SAME",
+      "relationType": "treats"
+    }
+  ]
+}

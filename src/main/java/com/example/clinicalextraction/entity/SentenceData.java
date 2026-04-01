@@ -11,7 +11,6 @@ public class SentenceData {
 
     private String sentence;
 
-
     private List<String> conditions;
 
     private List<String> drugs;

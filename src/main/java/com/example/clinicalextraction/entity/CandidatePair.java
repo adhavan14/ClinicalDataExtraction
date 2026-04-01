@@ -1,5 +1,6 @@
 package com.example.clinicalextraction.entity;
 
+import edu.stanford.nlp.ie.util.RelationTriple;
 import lombok.Builder;
 import lombok.Data;
 
@@ -24,4 +25,6 @@ public class CandidatePair {
     private List<String> sentenceLemmas;
 
     private List<DependencyLink> dependencyLinks;
+
+    private List<RelationTriple> relationTripleList;
 }

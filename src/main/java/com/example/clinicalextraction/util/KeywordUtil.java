@@ -13,14 +13,14 @@ public class KeywordUtil {
             Map.entry("initiate", 0.7),
             Map.entry("give", 0.7),
 
-            Map.entry("start", 0.4),
-            Map.entry("restart", 0.4),
-            Map.entry("receive", 0.4),
+            Map.entry("start", 0.7),
+            Map.entry("restart", 0.7),
+            Map.entry("receive", 0.7),
 
             Map.entry("take", 0.1),
 
-            Map.entry("treatment", 0.6),
-            Map.entry("prophylaxis", 0.6)
+            Map.entry("treatment", 0.7),
+            Map.entry("prophylaxis", 0.7)
     );
 
     public static final Set<String> ADVERSE_EFFECT = Set.of(

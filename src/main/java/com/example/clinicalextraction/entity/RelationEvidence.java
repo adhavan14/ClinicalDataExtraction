@@ -17,7 +17,6 @@ public class RelationEvidence {
 
     private List<String> keywords;
     private List<String> dependencyPaths;
-    private String pattern;
 
     private int distance;
     private String proximity;

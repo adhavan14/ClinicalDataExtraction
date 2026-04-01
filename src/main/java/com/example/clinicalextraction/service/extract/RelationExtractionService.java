@@ -5,12 +5,16 @@ import com.example.clinicalextraction.entity.*;
 import com.example.clinicalextraction.service.ClinicalXMLHandler;
 import com.example.clinicalextraction.service.XmlParser;
 import com.example.clinicalextraction.util.KeywordUtil;
+import edu.stanford.nlp.ie.util.RelationTriple;
+import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.naturalli.NaturalLogicAnnotations;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.CoreSentence;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.semgraph.SemanticGraphEdge;
+import edu.stanford.nlp.util.CoreMap;
 import org.springframework.stereotype.Service;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -37,6 +41,7 @@ public class RelationExtractionService {
     static {
         Properties props = new Properties();
         props.setProperty("annotators", "tokenize,ssplit,pos,lemma,depparse");
+        props.setProperty("annotators", "tokenize,ssplit,pos,lemma,depparse,natlog,openie");
         pipeline = new StanfordCoreNLP(props);
     }
 
@@ -95,8 +100,6 @@ public class RelationExtractionService {
                         score += KeywordUtil.getWeight(lemma);
                         keywords.add(lemma);
                     }
-
-
                 }
 
                 if (sentence.contains(pair.getCondition()) && sentence.contains(pair.getDrug())) {
@@ -104,29 +107,33 @@ public class RelationExtractionService {
                 }
             }
 
-            if (pair.getProximityLevel().equals("ADJACENT")) {
-
-                for (String lemma : pair.getSentenceLemmas()) {
-                    if (KeywordUtil.ADVERSE_EFFECT.contains(lemma)) {
+            else if (pair.getProximityLevel().equals("ADJACENT")) {
+                boolean isDependencyLinkPresent = false;
+                for (DependencyLink relationTriple : pair.getDependencyLinks()) {
+                    String verb = relationTriple.getRelation();
+                    if (KeywordUtil.ADVERSE_EFFECT.contains(verb)) {
                         keywords.clear();
                         continue;
                     }
 
-                    if (KeywordUtil.TREAT_KEYWORDS.containsKey(lemma)) {
-                        score += KeywordUtil.getWeight(lemma);
-                        keywords.add(lemma);
+                    if (KeywordUtil.TREAT_KEYWORDS.containsKey(verb)) {
+                        score += KeywordUtil.getWeight(verb);
+                        keywords.add(verb);
+                    }
+
+                    if (isValidTreatTriple(relationTriple, pair)) {
+                        System.out.println(pair.getCondition());
+                        score += 0.5;
+                        isDependencyLinkPresent = true;
+                        break;
                     }
                 }
 
-                List<String> compounds = pair.getDependencyLinks().stream()
-                        .filter(dependencyLink -> dependencyLink.getRelation().equals("compound"))
-                        .map(DependencyLink::getTarget)
-                        .toList();
-
-                if (compounds.contains(pair.getCondition()) && compounds.contains(pair.getDrug())) {
-                    score += 0.5;
+                if (!isDependencyLinkPresent) {
+                    score -= 1.0;
                 }
             }
+            System.out.println("drug " + pair.getDrug() + " score " + score);
             score -= pair.getDistance() * 0.1;
 
             if (score > 1 && !keywords.isEmpty()) {
@@ -146,38 +153,72 @@ public class RelationExtractionService {
         return results;
     }
 
+    private boolean isValidTreatTriple(DependencyLink triple,
+                                       CandidatePair pair) {
+
+        String subject = triple.getSource();
+        String relation = triple.getRelation();
+        String object = triple.getTarget();
+
+        boolean drugInRelation = relation.contains(pair.getDrug().toLowerCase());
+
+        if (!(subject.contains(pair.getDrug().toLowerCase()) || drugInRelation)) return false;
+        System.out.println("ppp " + pair.getDrug() + " -- " + (object.contains("condition") && pair.getConditionSentenceIndex() < pair.getDrugSentenceIndex()));
+        if (!(object.contains(pair.getCondition().toLowerCase()) ||
+                (object.contains("condition") && pair.getConditionSentenceIndex() < pair.getDrugSentenceIndex()))) {
+            return false;
+        }
+
+        return true;
+    }
+
     private void findDependencyLink(String text, CandidatePair candidatePair) {
 
         List<DependencyLink> dependencyLinks = new ArrayList<>();
 
+//        List<RelationTriple> relationTripleList = new ArrayList<>();
+
         List<String> lemmas = new ArrayList<>();
 
-        System.out.println(text);
-
         CoreDocument doc = new CoreDocument(text);
+        System.out.println(text);
         pipeline.annotate(doc);
 
+        for (CoreMap sentence : doc.annotation().get(CoreAnnotations.SentencesAnnotation.class)) {
+            Collection<RelationTriple> triples =
+                    sentence.get(NaturalLogicAnnotations.RelationTriplesAnnotation.class);
+
+            for (RelationTriple relationTriple : triples) {
+                dependencyLinks.add(DependencyLink.builder()
+                                .source(relationTriple.subjectGloss().toLowerCase())
+                                .relation(relationTriple.relationLemmaGloss().toLowerCase())
+                                .target(relationTriple.objectGloss().toLowerCase())
+                        .build());
+            }
+        }
+
         for (CoreSentence sentence : doc.sentences()) {
-            SemanticGraph graph = sentence.dependencyParse();
+//            SemanticGraph graph = sentence.dependencyParse();
 
             for (CoreLabel token : sentence.tokens()) {
                 lemmas.add(token.lemma().toLowerCase());
             }
 
-            for (SemanticGraphEdge edge : graph.edgeListSorted()) {
-                String gov = edge.getGovernor().lemma();
-                String dep = edge.getDependent().lemma();
-                String rel = edge.getRelation().toString();
-
-                dependencyLinks.add(DependencyLink.builder()
-                                .source(gov)
-                                .relation(rel)
-                                .target(dep)
-                        .build());
-            }
+//            for (SemanticGraphEdge edge : graph.edgeListSorted()) {
+//                String gov = edge.getGovernor().lemma();
+//                String dep = edge.getDependent().lemma();
+//                String rel = edge.getRelation().toString();
+//
+//                dependencyLinks.add(DependencyLink.builder()
+//                                .source(gov)
+//                                .relation(rel)
+//                                .target(dep)
+//                        .build());
+//            }
         }
         candidatePair.setDependencyLinks(dependencyLinks);
         candidatePair.setSentenceLemmas(lemmas);
+//        candidatePair.setRelationTripleList(relationTripleList);
     }
 
     private void findDistance(List<SentenceData> sentenceData, Set<CandidatePair> candidatePairs) {
@@ -186,12 +227,18 @@ public class RelationExtractionService {
 
         for (int i = 0; i< size; i++) {
             generateDistance(sentenceData.get(i), sentenceData.get(i), i, i, candidatePairs);
-            if (i>0) {
-                generateDistance(sentenceData.get(i-1), sentenceData.get(i), i-1, i, candidatePairs);
-            } else if (i < sentenceData.size()-1) {
-                generateDistance(sentenceData.get(i), sentenceData.get(i+1), i, i+1, candidatePairs);
+
+            if (i > 0 && isAdjacentAllowed(sentenceData.get(i)) && isAdjacentAllowed(sentenceData.get(i-1))) {
+                generateDistance(sentenceData.get(i - 1), sentenceData.get(i), i - 1, i, candidatePairs);
+            } else if (i < sentenceData.size() - 1 && isAdjacentAllowed(sentenceData.get(i)) && isAdjacentAllowed(sentenceData.get(i+1))) {
+                generateDistance(sentenceData.get(i), sentenceData.get(i + 1), i, i + 1, candidatePairs);
             }
+
         }
+    }
+
+    private boolean isAdjacentAllowed(SentenceData sentenceData) {
+        return sentenceData.getConditions().isEmpty() || sentenceData.getDrugs().isEmpty();
     }
 
     private void generateDistance(SentenceData dataOne, SentenceData dataTwo, int drugIndex, int conditionIndex, Set<CandidatePair> candidatePairs) {
@@ -216,8 +263,8 @@ public class RelationExtractionService {
                 CandidatePair candidatePair = CandidatePair.builder()
                         .drug(drug)
                         .condition(condition)
-                        .drugSentenceIndex(drugIndex)
-                        .conditionSentenceIndex(conditionIndex)
+                        .drugSentenceIndex(conditionIndex)
+                        .conditionSentenceIndex(drugIndex)
                         .distance(distance)
                         .proximityLevel(getProximityLevel(distance))
                         .build();

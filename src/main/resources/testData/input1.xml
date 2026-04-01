@@ -1,0 +1,10 @@
+<root>
+
+    The patient was diagnosed with <condition>diabetes</condition>.
+    The doctor prescribed <drug>Metformin</drug> to treat the condition.
+
+    <drug>Paracetamol</drug> was given for <condition>fever</condition>.
+
+    The patient started <drug>Amlodipine</drug> for <condition>hypertension</condition>.
+
+</root>
