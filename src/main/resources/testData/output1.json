@@ -1,0 +1,46 @@
+{
+  "relationEvidences": [
+    {
+      "condition": "hypertension",
+      "confidence": 1.2,
+      "dependencyPaths": [
+        "dependency_connection"
+      ],
+      "distance": 0,
+      "drug": "Amlodipine",
+      "keywords": [
+        "start"
+      ],
+      "proximity": "SAME",
+      "relationType": "treats"
+    },
+    {
+      "condition": "diabetes",
+      "confidence": 1.0999999999999999,
+      "dependencyPaths": [
+        "dependency_connection"
+      ],
+      "distance": 1,
+      "drug": "Metformin",
+      "keywords": [
+        "treat"
+      ],
+      "proximity": "ADJACENT",
+      "relationType": "treats"
+    },
+    {
+      "condition": "fever",
+      "confidence": 1.2,
+      "dependencyPaths": [
+        "dependency_connection"
+      ],
+      "distance": 0,
+      "drug": "Paracetamol",
+      "keywords": [
+        "give"
+      ],
+      "proximity": "SAME",
+      "relationType": "treats"
+    }
+  ]
+}

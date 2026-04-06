@@ -1,0 +1,10 @@
+<root>
+
+    The patient had <condition>asthma</condition>.
+    <drug>Salbutamol</drug> was prescribed to treat the condition.
+
+    <drug>Amoxicillin</drug> was given for <condition>infection</condition>.
+
+    After taking <drug>Amoxicillin</drug>, the patient developed <condition>rash</condition>.
+
+</root>
